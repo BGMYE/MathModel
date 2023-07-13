@@ -1,10 +1,9 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-
 plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
-
+# 龙格库塔
 
 def func(u1, u2, z1, z2, t):
     a = u1
@@ -51,10 +50,10 @@ if __name__ == '__main__':
         k4 = func(u1 + dt * k3[2], u2 + dt * k3[3],
                   z1 + dt * k3[0], z2 + dt * k3[1], t + dt)
 
-        z1 += dt*k1[0]/6 + dt*k2[0]/3 + dt*k3[0]/3 + dt*k4[0]/6
-        z2 += dt*k1[1]/6 + dt*k2[1]/3 + dt*k3[1]/3 + dt*k4[1]/6
-        u1 += dt*k1[2]/6 + dt*k2[2]/3 + dt*k3[2]/3 + dt*k4[2]/6
-        u2 += dt*k1[3]/6 + dt*k2[3]/3 + dt*k3[3]/3 + dt*k4[3]/6
+        z1 += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0])
+        z2 += dt/6 * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1])
+        u1 += dt/6 * (k1[2] + 2*k2[2] + 2*k3[2] + k4[2])
+        u2 += dt/6 * (k1[3] + 2*k2[3] + 2*k3[3] + k4[3])
 
         t += dt
         z1s.append(np.float64(z1))
@@ -70,4 +69,4 @@ if __name__ == '__main__':
     plt.show()
 
     print(z2s[100000 - 1], z2s[200000 - 1])
-    print(1)
+
