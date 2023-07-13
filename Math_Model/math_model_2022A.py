@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
+
 def func(u1, u2, z1, z2, t):
     a = u1
     b = u2
@@ -16,6 +17,8 @@ def func(u1, u2, z1, z2, t):
 
 if __name__ == '__main__':
     t = 0.  # 自变量初始值
+    w = 1.4005  # 入射频率
+    T = 2 * np.pi / w * 40  # 自变量终值
     u1 = 0.  # 因变量初始值
     u2 = 0.  # 因变量初始值
     z1 = 0.  # 因变量初始值
@@ -29,31 +32,29 @@ if __name__ == '__main__':
     rho = 1025.  # 海水密度
     g = 9.8  # 重力加速度
     C_p = 656.3616  # 阻尼系数
-    w = 1.4005  # 入射频率
     f_w = 6250.  # 垂荡激励力振幅
     C_z = 10000.  # 直线阻尼器
     z1s, z2s, u1s, u2s, ts = [], [], [], [], []
 
-    while t <= 2*np.pi/w*40:
+    while t <= T:
         k1 = func(u1, u2, z1, z2, t)
-        k2 = func(u1 + dt / 2 * k1[2],
-                  u2 + dt / 2 * k1[3],
-                  z1 + dt / 2 * k1[0],
-                  z2 + dt / 2 * k1[1],
-                  t + dt / 2)
-        k3 = func(u1 + dt / 2 * k2[2],
-                  u2 + dt / 2 * k2[3],
-                  z1 + dt / 2 * k2[0],
-                  z2 + dt / 2 * k2[1],
-                  t + dt / 2)
+        k2 = func(u1 + dt / 2. * k1[2],
+                  u2 + dt / 2. * k1[3],
+                  z1 + dt / 2. * k1[0],
+                  z2 + dt / 2. * k1[1],
+                  t + dt / 2.)
+        k3 = func(u1 + dt / 2. * k2[2],
+                  u2 + dt / 2. * k2[3],
+                  z1 + dt / 2. * k2[0],
+                  z2 + dt / 2. * k2[1],
+                  t + dt / 2.)
         k4 = func(u1 + dt * k3[2], u2 + dt * k3[3],
                   z1 + dt * k3[0], z2 + dt * k3[1], t + dt)
 
-        z1 += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0])
-
-        z2 += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0])
-        u1 += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0])
-        u2 += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0])
+        z1 += dt*k1[0]/6 + dt*k2[0]/3 + dt*k3[0]/3 + dt*k4[0]/6
+        z2 += dt*k1[1]/6 + dt*k2[1]/3 + dt*k3[1]/3 + dt*k4[1]/6
+        u1 += dt*k1[2]/6 + dt*k2[2]/3 + dt*k3[2]/3 + dt*k4[2]/6
+        u2 += dt*k1[3]/6 + dt*k2[3]/3 + dt*k3[3]/3 + dt*k4[3]/6
 
         t += dt
         z1s.append(np.float64(z1))
@@ -62,23 +63,11 @@ if __name__ == '__main__':
         u2s.append(np.float64(u2))
         ts.append(t)
 
-    # exact = [(t ** 2 + 4) ** 2 / 16 for t in ts]
-    # plt.figure(dpi=100, figsize=(16, 8))
+
     plt.plot(ts, z1s, label='振子', c='r')
     plt.plot(ts, z2s, label='浮子', c='b')
-    # plt.plot(ts, np.float64(u1)s, label='1', c='r')
-    # print(z1s[100])
-    # print(z1s[200])
     plt.legend()
     plt.show()
 
-    print(z2s[100000-1], z2s[200000-1])
+    print(z2s[100000 - 1], z2s[200000 - 1])
     print(1)
-
-
-
-
-
-
-
-
