@@ -32,10 +32,11 @@ if __name__ == '__main__':
     g = 9.8  # 重力加速度
     C_p = 656.3616  # 阻尼系数
     f_w = 6250.  # 垂荡激励力振幅
-    C_z = 10000.  # 直线阻尼器
-    z1s, z2s, u1s, u2s, ts = [], [], [], [], []
+    # C_z = 10000.  # 直线阻尼器
+    z1s, z2s, z3s, u1s, u2s, u3s, ts = [], [], [], [], [], [], []
 
     while t <= T:
+        C_z = (abs(u1 - u2) ** 0.5) * 10000.
         k1 = func(u1, u2, z1, z2, t)
         k2 = func(u1 + dt / 2. * k1[2],
                   u2 + dt / 2. * k1[3],
@@ -56,17 +57,33 @@ if __name__ == '__main__':
         u2 += dt/6 * (k1[3] + 2*k2[3] + 2*k3[3] + k4[3])
 
         t += dt
-        z1s.append(np.float64(z1))
+        z1s.append(z1)
         z2s.append(z2)
-        u1s.append(np.float64(u1))
-        u2s.append(np.float64(u2))
+        u1s.append(u1)
+        u2s.append(u2)
+        u3s.append(u1-u2)
+        z3s.append(z1-z2)
         ts.append(t)
 
 
-    plt.plot(ts, z1s, label='振子', c='r')
-    plt.plot(ts, z2s, label='浮子', c='b')
-    plt.legend()
+    plt.figure(figsize=(14, 4), dpi=100)
+    ax1 = plt.subplot(1, 2, 1)
+    ax2 = ax1.twinx()
+    M1, = ax1.plot(ts, z1s, c='b')
+    M2, = ax2.plot(ts, z2s, c='g')
+    M5, = ax1.plot(ts, z3s, c='r')
+    plt.legend(handles=[M1, M2, M5, ], labels=["振子", "浮子", "振子与浮子差"], loc="best")
+    ax1.set_xlabel("时间(s)")
+    ax1.set_ylabel("位移（m）")
+
+    ax3 = plt.subplot(1, 2, 2)
+    ax4 = ax3.twinx()
+    M3, = ax3.plot(ts, u1s, c='b')
+    M4, = ax4.plot(ts, u2s, c='g')
+    M6, = ax1.plot(ts, u3s, c='r')
+    plt.legend(handles=[M3, M4, M6, ], labels=["振子", "浮子", "振子与浮子差"], loc="best")
+    ax3.set_xlabel("时间(s)")
+    ax3.set_ylabel("速度（m/s）")
     plt.show()
 
-    print(z2s[100000 - 1], z2s[200000 - 1])
-
+    print(z1s[100000+1],z1s[200000+1])
